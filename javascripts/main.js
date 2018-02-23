@@ -3,6 +3,9 @@ var log = console.log.bind(console);
 var CANVAS_WIDTH = 400;
 var CANVAS_HEIGHT = 300;
 
+var BALL_SPEED = 3;
+var PADDLE_SPEED = 5;
+
 // 新建图片
 var ImageFromPtah = function (path) {
   var image = new Image();
@@ -15,7 +18,7 @@ var Paddle = function () {
   this.image = new ImageFromPtah('./images/paddle.png');
   this.x = (CANVAS_WIDTH - 64) / 2;
   this.y = CANVAS_HEIGHT - 16;
-  this.speed = 5;
+  this.speed = PADDLE_SPEED;
   // 左移
   this.moveLeft = function () {
     this.x = this.x >= this.speed ? this.x -= this.speed : 0;
@@ -32,8 +35,8 @@ var Ball = function () {
   this.image = new ImageFromPtah('./images/ball.png');
   this.x = (CANVAS_WIDTH - 8) / 2;
   this.y = CANVAS_HEIGHT - 24;
-  this.speedX = 3;
-  this.speedY = -3;
+  this.speedX = BALL_SPEED;
+  this.speedY = BALL_SPEED * -1;
   this.fired = false;
   this.move = function () {
     if (this.fired) {
@@ -47,13 +50,25 @@ var Ball = function () {
     this.fired = true;
   };
   this.collide = function (ob) {
-    // 球与挡板上边相交
-    if (this.y + 8 > ob.y) {
-      if (this.x + 8 > ob.x && this.x < ob.x + ob.image.width) {
-        return true;
-      }
-    }
-    return false;
+    // 球与物体相交
+    return !(this.y + 8 <= ob.y || this.y >= ob.y + ob.image.height || this.x + 8 <= ob.x || this.x >= ob.x + ob.image.width)
+  };
+  this.bounce = function (direction) {
+    this.speedY *= -1;
+  }
+  this.stay = function (ob) {
+    if (!this.fired) this.x = ob.image.width / 2 + ob.x
+  };
+};
+
+// Block
+var Block = function () {
+  this.image = new ImageFromPtah('./images/block.png');
+  this.x = 0;
+  this.y = 0;
+  this.alive = true;
+  this.kill = function () {
+    this.alive = false;
   }
 };
 
@@ -118,39 +133,58 @@ var __main = function () {
   // new paddle
   var paddle = new Paddle();
   // new ball
-  var ball = new Ball();
+  var ball = new Ball(); 
+  // new block
+  var blocks = [];
+  for(var i = 0; i < 9; i++) {
 
+    blocks.push((function (i) {
+      var b = new Block();
+      b.x = i * 42;
+      return b
+    }(i)))
+  }
 
   var game = Game();
 
   // 注册事件
   game.registerAction('a', function () {
     paddle.moveLeft();
-  })
+    ball.stay(paddle);
+  });
   game.registerAction('d', function () {
     paddle.moveRight();
-  })
+    ball.stay(paddle);
+  });
   game.registerAction(' ', function () {
     ball.fire();
-  })
+  });
 
   game.update = function () {
 
+    // 球运动
     ball.move();
-
+    // 球与挡板碰撞
     if (ball.collide(paddle)) {
-      ball.speedY = -ball.speedY;
-      // if(ball.y + 8 < CANVAS_HEIGHT) {
-      // } else {
-      //   ball.speedX = -ball.speedX
-      // } 
+      ball.bounce();
     }
+    // 球与砖块碰撞
+    blocks.forEach(function (block) {
+      if (block.alive && ball.collide(block)) {
+        block.kill()
+        ball.bounce();
+      }
+    })
   };
 
   game.draw = function () {
 
     game.drawImage(paddle);
     game.drawImage(ball);
+
+    blocks.forEach(function (block) {
+      if (block.alive) game.drawImage(block);
+    })
   };
 };
 
