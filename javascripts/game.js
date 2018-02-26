@@ -6,22 +6,35 @@ var Game = function () {
     canvas.height = CANVAS_HEIGHT;
     var ctx = canvas.getContext('2d');
 
+    var timer;
+
     var g = {
         canvas: canvas,
         ctx: ctx,
         keydown: {},
         actions: {},
+        stopStatus: false,
+        images: {}
     };
 
     g.drawImage = function (image) {
         g.ctx.drawImage(image.image, image.x, image.y);
+    };
+    g.fillScore = function (score) {
+        score = score === void(0) ? 0 : score;
+        var con = '分数: ' + score || 0;
+        g.ctx.fillText(con, 300, 10)
+    };
+    g.loadImages = function (images) {
+        for (var key in images) {
+            var image = images[key];
+        }
     };
 
     // 按键事件
     window.addEventListener('keydown', function (e) {
         g.keydown[e.key] = true;
     });
-
     window.addEventListener('keyup', function (e) {
         g.keydown[e.key] = false;
     });
@@ -30,29 +43,31 @@ var Game = function () {
     g.registerAction = function (key, callback) {
         g.actions[key] = callback;
     };
-
-    var runLoop = function () {
-        // event
+    // 暂停游戏 
+    g.pause = function () {
+        clearInterval(timer);
+    };
+    // 重启游戏
+    g.regain = function () {
+        timer = setInterval(loop, 1000 / FPS);
+    };
+    // 循环函数
+    var loop = function () {
         var actions = Object.keys(g.actions);
         for (var i = 0, l = actions.length; i < l; i++) {
             var key = actions[i];
             // 按键按下, 执行注册的事件
             g.keydown[key] ? g.actions[key]() : null;
-        }
+        };
         // updata
         g.update();
         // clear
         g.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         // draw
         g.draw();
-        setTimeout(function () {
-            runLoop()
-        }, 1000 / FPS)
-    }
+    };
 
-    setTimeout(function () {
-        runLoop()
-    }, 1000 / FPS )
+    g.regain();
 
     return g;
 };

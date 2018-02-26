@@ -1,30 +1,20 @@
-var levels = [
-    [
-        [0, 0],
-    ],
-    [
-        [0, 0],
-        [42, 0],
-    ],
-    [
-        [0, 0],
-        [42, 0],
-        [84, 0],
-    ],
-    [
-        [0, 0],
-        [42, 0],
-        [84, 0],
-        [126, 0],
-    ],
-    [
-        [0, 0],
-        [42, 0],
-        [84, 0],
-        [126, 0],
-        [168, 0],
-    ]
-]
+var levels = [];
+
+var level = 5;
+var blockWidth = 32;
+var blockHeight = 16;
+
+
+// 循环关卡
+for (var l = 0; l < level; l++) {
+    levels[l] = []
+    for (var i = 0; i <= l; i++) {
+        var positionY = i * blockHeight;
+        for (var j = 0; j < 13; j++) {
+            levels[l].push([j * blockWidth, positionY]);
+        }
+    }
+};
 
 var loadLevel = function (n) {
     n = n - 1;
@@ -35,4 +25,4 @@ var loadLevel = function (n) {
         blocks.push(new Block(block))
     };
     return blocks;
-}
+};
