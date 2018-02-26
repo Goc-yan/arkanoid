@@ -14,7 +14,8 @@ var Game = function () {
         keydown: {},
         actions: {},
         stopStatus: false,
-        images: {}
+        images: {},
+        timer: null,
     };
 
     g.drawImage = function (image) {
@@ -25,6 +26,10 @@ var Game = function () {
         var con = '分数: ' + score || 0;
         g.ctx.fillText(con, 300, 10)
     };
+    g.fillTextFn = function (text) {
+        log(text);
+        g.ctx.fillText(text, 300, 10)
+    }
     g.loadImages = function (images) {
         for (var key in images) {
             var image = images[key];
@@ -38,7 +43,6 @@ var Game = function () {
     window.addEventListener('keyup', function (e) {
         g.keydown[e.key] = false;
     });
-
     // 注册
     g.registerAction = function (key, callback) {
         g.actions[key] = callback;
@@ -46,10 +50,12 @@ var Game = function () {
     // 暂停游戏 
     g.pause = function () {
         clearInterval(timer);
+        timer = null;
     };
     // 重启游戏
-    g.regain = function () {
-        timer = setInterval(loop, 1000 / FPS);
+    g.continue = function (fps) {
+        fps = fps === void(0) ? FPS : fps
+        timer = setInterval(loop, 1000 / fps);
     };
     // 循环函数
     var loop = function () {
@@ -67,7 +73,7 @@ var Game = function () {
         g.draw();
     };
 
-    g.regain();
+    g.continue();
 
     return g;
 };

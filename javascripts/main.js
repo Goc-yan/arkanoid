@@ -8,114 +8,76 @@ var FPS = 60; // 帧率
 
 var score = 0;
 
-
 // 调试
-var debugFn = function () {
+var debug = function (enable, game, blocks, ball) {
+  if (enable) {
 
-}
+    window.addEventListener('keyup', function (e) {
+      var key = e.key;
+      if ('12345'.includes(key)) {
+        var blocksBuff = loadLevel(key);
+        blocks.length = 0;
+        blocksBuff.forEach(function (block) {
+          blocks.push(block)
+        });
+      }
+    });
+
+    document.getElementById("fpsInput").addEventListener('input', function () {
+      var fps = document.getElementById("fpsInput").value * 1;
+      game.pause();
+      game.continue(fps);
+    })
+
+    // mouse event
+    game.canvas.addEventListener('mousedown', function (e) {
+      var x = e.layerX;
+      var y = e.layerY;
+      if (ball.fired && ball.isClick(x, y)) game.clickBall = true;
+    });
+    game.canvas.addEventListener('mousemove', function (e) {
+      if (game.clickBall) {
+        var x = e.layerX;
+        var y = e.layerY;
+        ball.x = x - ball.image.width / 2;
+        ball.y = y - ball.image.height / 2;
+      }
+    });
+    game.canvas.addEventListener('mouseup', function (e) {
+      if (game.clickBall) game.clickBall = false;
+    });
+  }
+};
 
 // 入口函数
-var __main = function () {
+var __main = function (scene) {
 
   // debug
   enable = true;
 
-  // new paddle
-  var paddle = new Paddle();
-  // new ball
-  var ball = new Ball();
-  // new block
-  var blocks = loadLevel(1);
   // new game
   var game = new Game();
 
-  // register action
-  game.registerAction('a', function () {
-    paddle.moveLeft();
-    ball.stay(paddle);
-  });
-  game.registerAction('d', function () {
-    paddle.moveRight();
-    ball.stay(paddle);
-  });
-  game.registerAction(' ', function () {
-    ball.fire();
-  });
+  scene = scene === void(0) ? new Scene(game, __main) : scene;
 
   game.update = function () {
-
-    // 球暂停运动
-    if (!game.stopStatus) ball.move();
-
-    // 球与挡板碰撞
-    if (ball.collide(paddle)) {
-      ball.bounce();
-    }
-    // 球与砖块碰撞
-    blocks.forEach(function (block) {
-      if (block.alive && ball.collide(block)) {
-        block.kill()
-        ball.bounce();
-        score += 100;
-      }
-    })
+    scene.update && scene.update();
   };
-
   game.draw = function () {
-
-    game.drawImage(paddle);
-    game.drawImage(ball);
-    game.fillScore(score);
-
-    blocks.forEach(function (block) {
-      if (block.alive) game.drawImage(block);
-    })
+    scene.draw && scene.draw();
   };
 
   // 按键
   window.addEventListener('keyup', function (e) {
     var key = e.key;
-    if (key === 'p') {
-      if (!game.clickBall) game.stopStatus = ~game.stopStatus;
-    };
-    if (key === 'r') {
-      game.pause();
-      __main();
-    }
+    if (key === 'p' && !game.clickBall) game.stopStatus = !game.stopStatus;
+    // if (key === 'r') {
+    //   game && game.pause();
+    //   game = null;
+    //   __main();
+    // }
   });
 
-  // mouse event
-  game.canvas.addEventListener('mousedown', function (e) {
-    var x = e.layerX;
-    var y = e.layerY;
-    if (ball.isClick(x, y)) {
-      game.clickBall = true;
-    }
-  });
-  game.canvas.addEventListener('mousemove', function (e) {
-    if (game.clickBall) {
-      var x = e.layerX;
-      var y = e.layerY;
-      ball.x = x - ball.images.width / 2;
-      ball.y = y - ball.images.height / 2;
-    }
-  });
-  game.canvas.addEventListener('mouseup', function (e) {
-    if (game.clickBall) game.clickBall = false;
-  });
-
-  // DEBUG
-  if (enable) {
-    (function () {
-      window.addEventListener('keyup', function (e) {
-        var key = e.key;
-        if ('12345'.includes(key)) {
-          blocks = loadLevel(key);
-        }
-      })
-    })()
-  };
-};
-
+}
 
 __main();

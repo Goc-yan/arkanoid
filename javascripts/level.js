@@ -17,7 +17,7 @@ for (var l = 0; l < level; l++) {
 };
 
 var loadLevel = function (n) {
-    n = n - 1;
+    n -= 1;
     var level = levels[n];
     var blocks = [];
     for (var i = 0, l = level.length; i < l; i++) {
