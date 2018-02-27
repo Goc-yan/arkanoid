@@ -3,6 +3,9 @@ var CANVAS_HEIGHT = 300; // 画布高
 
 var BALL_SPEED = 3; // 小球速度
 var PADDLE_SPEED = 5; // 挡板速度
+var PADDLE_WIDTH = 64;
+var PADDLE_HEIGHT = 16;
+
 
 var FPS = 60; // 帧率
 
@@ -30,12 +33,12 @@ var debug = function (enable, game, blocks, ball) {
     })
 
     // mouse event
-    game.canvas.addEventListener('mousedown', function (e) {
+    game.getCanvas().addEventListener('mousedown', function (e) {
       var x = e.layerX;
       var y = e.layerY;
       if (ball.fired && ball.isClick(x, y)) game.clickBall = true;
     });
-    game.canvas.addEventListener('mousemove', function (e) {
+    game.getCanvas().addEventListener('mousemove', function (e) {
       if (game.clickBall) {
         var x = e.layerX;
         var y = e.layerY;
@@ -43,39 +46,31 @@ var debug = function (enable, game, blocks, ball) {
         ball.y = y - ball.image.height / 2;
       }
     });
-    game.canvas.addEventListener('mouseup', function (e) {
+    game.getCanvas().addEventListener('mouseup', function (e) {
       if (game.clickBall) game.clickBall = false;
     });
   }
 };
 
 // 入口函数
-var __main = function (scene) {
-
-  // debug
-  enable = true;
+var __main = function () {
 
   // new game
   var game = new Game();
 
-  scene = scene === void(0) ? new Scene(game, __main) : scene;
+  game.scene = new Scene(game);
 
   game.update = function () {
-    scene.update && scene.update();
+    game.scene.update && game.scene.update();
   };
   game.draw = function () {
-    scene.draw && scene.draw();
+    game.scene.draw && game.scene.draw();
   };
 
   // 按键
   window.addEventListener('keyup', function (e) {
     var key = e.key;
     if (key === 'p' && !game.clickBall) game.stopStatus = !game.stopStatus;
-    // if (key === 'r') {
-    //   game && game.pause();
-    //   game = null;
-    //   __main();
-    // }
   });
 
 }

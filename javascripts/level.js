@@ -19,10 +19,14 @@ for (var l = 0; l < level; l++) {
 var loadLevel = function (n) {
     n -= 1;
     var level = levels[n];
-    var blocks = [];
-    for (var i = 0, l = level.length; i < l; i++) {
-        var block = level[i];
-        blocks.push(new Block(block))
-    };
-    return blocks;
+    if (level) {
+        var blocks = [];
+        for (var i = 0, l = level.length; i < l; i++) {
+            var block = level[i];
+            blocks.push(new Block(block))
+        };
+        return blocks;
+    } else {
+        return false
+    }
 };

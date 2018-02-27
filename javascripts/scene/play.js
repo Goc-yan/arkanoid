@@ -1,11 +1,12 @@
-var Scene = function (game, callback) {
+var Scene = function (game) {
 
     // debug
     enable = true;
 
     var paddle = new Paddle();
     var ball = new Ball();
-    var blocks = loadLevel(1);
+    var blocks = loadLevel(game.level);
+    var blockNum = blocks.length;
 
     this.update = function () {
         // 球暂停运动
@@ -21,15 +22,19 @@ var Scene = function (game, callback) {
                 block.kill()
                 ball.bounce();
                 score += 100;
+                blockNum--;
             }
-        })
+        });
 
+        if (blockNum === 0) {
+            this.levelUp();
+        };
+
+        // 游戏结束
         if (ball.y > CANVAS_HEIGHT) {
-            game.pause();
-            var scene = new gameoverScene(game, callback);
-            callback(scene);
+            game.replaceScene(new gameoverScene(game));
             return
-        }
+        };
     };
 
     this.draw = function () {
@@ -40,7 +45,20 @@ var Scene = function (game, callback) {
         blocks.forEach(function (block) {
             if (block.alive) game.drawImage(block);
         })
-    }
+    };
+    this.levelUp = function () {
+        game.level++;
+        var lb = loadLevel(game.level);
+        if (lb) {
+            blocks = lb;
+            blockNum = blocks.length;
+            paddle = new Paddle();
+            ball = new Ball();
+        } else {
+            game.replaceScene(new gameoverScene(game));
+        }
+    };
+    this.loadBlock = function () {}
 
     // register action
     game.registerAction('a', function () {
@@ -54,6 +72,13 @@ var Scene = function (game, callback) {
     game.registerAction(' ', function () {
         ball.fire();
     });
-    
+
+    // window.addEventListener('keyup', function (e) {
+    //     var key = e.key;
+    //     if (key === 'r') {
+    //         game.scene = new Scene(game);
+    //     }
+    // })
+
     debug(enable, game, blocks, ball);
 }
