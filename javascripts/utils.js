@@ -11,10 +11,9 @@ var ImageFromPtah = (function () {
     return function (path) {
         if (imageBuff[path]) return imageBuff[path];
         var image = new Image();
-        image.onload = function () {};
         image.src = path;
         imageBuff[path] = image;
-        return image;
+        return image
     }
 })();
 

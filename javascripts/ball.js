@@ -20,17 +20,17 @@ var Ball = function () {
     };
     // 球与物体相交
     this.collide = function (ob) {
-        return !(this.y + 8 <= ob.y || this.y >= ob.y + ob.image.height || this.x + 8 <= ob.x || this.x >= ob.x + ob.image.width)
+        return !(this.y + 8 <= ob.y || this.y >= ob.y + 8 || this.x + 8 <= ob.x || this.x >= ob.x + 8);
     };
     // 被点击
     this.isClick = function (x, y) {
-        return x > this.x && x < (this.x + this.image.width) && y > this.y && y < (this.y + this.image.height)
+        return this.fire && x > this.x && x < (this.x + 8) && y > this.y && y < (this.y + 8)
     };
     // 反弹
     this.bounce = function (direction) {
         this.speedY *= -1;
     };
     this.stay = function (ob) {
-        if (!this.fired) this.x = ob.image.width / 2 + ob.x
+        if (!this.fired) this.x = 8 / 2 + ob.x
     };
 };

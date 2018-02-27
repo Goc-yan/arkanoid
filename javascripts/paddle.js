@@ -1,7 +1,9 @@
 var Paddle = function () {
+    this.paddleWidth = PADDLE_WIDTH;
+    this.paddleHeight = PADDLE_HEIGHT;
     this.image = new ImageFromPtah('./images/paddle.png');
-    this.x = (CANVAS_WIDTH - 64) / 2;
-    this.y = CANVAS_HEIGHT - 16;
+    this.x = (CANVAS_WIDTH - this.paddleWidth) / 2;
+    this.y = CANVAS_HEIGHT - this.paddleHeight;
     this.speed = PADDLE_SPEED;
     // 左移
     this.moveLeft = function () {
