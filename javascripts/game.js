@@ -15,6 +15,7 @@ var Game = function () {
         timer: null, // 定时器
         blocks: [], // 关卡砖块
         level: 1,
+        score: 0,
     };
 
     // 按键事件
@@ -42,10 +43,20 @@ var Game = function () {
         var con = '分数: ' + score || 0;
         ctx.fillText(con, 300, 10)
     };
-    g.fillTextFn = function (text) {
-        ctx.font = '36px'
-        ctx.fillText(text, 150, 150);
-    }
+    g.resetScore = function () {
+        g.score = 0;
+        g.updateScore();
+    };
+    g.updateScore = function (s) {
+        s = s || 0;
+        e('#score').innerHTML = g.score += s;
+    };
+    g.fillTextFn = function (text, color) {
+        var textWidth = ctx.measureText(text).width;
+        ctx.fillStyle = color || '#000';
+        ctx.font = '24px serif';
+        ctx.fillText(text, (CANVAS_WIDTH - textWidth) / 2, (CANVAS_HEIGHT + 24) / 2,);
+    };
     g.loadImages = function (images) {
         for (var key in images) {
             var image = images[key];
@@ -62,6 +73,10 @@ var Game = function () {
         fps = fps === void(0) ? FPS : fps
         timer = setInterval(loop, 1000 / fps);
     };
+    g.fillShawdow = function () {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
     var loop = function () {
         var actions = Object.keys(g.actions);
         for (var i = 0, l = actions.length; i < l; i++) {

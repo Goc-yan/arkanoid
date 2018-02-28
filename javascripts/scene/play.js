@@ -1,7 +1,7 @@
 var Scene = function (game) {
 
     // debug
-    enable = true;
+    enable = false;
 
     var paddle = new Paddle();
     var ball = new Ball();
@@ -21,7 +21,7 @@ var Scene = function (game) {
             if (block.alive && ball.collide(block)) {
                 block.kill()
                 ball.bounce();
-                score += 100;
+                game.updateScore(100);
                 blockNum--;
             }
         });
@@ -32,7 +32,7 @@ var Scene = function (game) {
 
         // 游戏结束
         if (ball.y > CANVAS_HEIGHT) {
-            game.replaceScene(new gameoverScene(game));
+            game.replaceScene(new gameoverScene(game, '游戏结束, 按R键重玩'));
             return
         };
     };
@@ -40,7 +40,7 @@ var Scene = function (game) {
     this.draw = function () {
         game.drawImage(paddle);
         game.drawImage(ball);
-        game.fillScore(score);
+        // game.fillScore(score);
 
         blocks.forEach(function (block) {
             if (block.alive) game.drawImage(block);
@@ -55,30 +55,23 @@ var Scene = function (game) {
             paddle = new Paddle();
             ball = new Ball();
         } else {
-            game.replaceScene(new gameoverScene(game));
+            game.replaceScene(new gameoverScene(game, '通关成功, 按R键重玩'));
         }
     };
-    this.loadBlock = function () {}
 
     // register action
     game.registerAction('a', function () {
+        if (ball.fired && game.stopStatus) return
         paddle.moveLeft();
         ball.stay(paddle);
     });
     game.registerAction('d', function () {
+        if (ball.fired && game.stopStatus) return
         paddle.moveRight();
         ball.stay(paddle);
     });
     game.registerAction(' ', function () {
         ball.fire();
     });
-
-    // window.addEventListener('keyup', function (e) {
-    //     var key = e.key;
-    //     if (key === 'r') {
-    //         game.scene = new Scene(game);
-    //     }
-    // })
-
     debug(enable, game, blocks, ball);
 }

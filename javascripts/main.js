@@ -9,8 +9,6 @@ var PADDLE_HEIGHT = 16;
 
 var FPS = 60; // 帧率
 
-var score = 0;
-
 // 调试
 var debug = function (enable, game, blocks, ball) {
   if (enable) {
@@ -58,7 +56,9 @@ var __main = function () {
   // new game
   var game = new Game();
 
-  game.scene = new Scene(game);
+  game.scene = new startScreen(game);
+
+  game.resetScore()
 
   game.update = function () {
     game.scene.update && game.scene.update();

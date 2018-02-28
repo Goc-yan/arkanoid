@@ -18,6 +18,10 @@ var Ball = function () {
     this.fire = function () {
         this.fired = true;
     };
+    // dotInRect
+    var dotInRect = function (d, r) {
+        return d[0] >= r.x && d[0] <= (r.x + r.image.width) && d[1] >= r.y && d[1] <= (r.y + r.image.height)
+    }
     // 球与物体相交
     this.collide = function (ob) {
         return !(this.y + 8 <= ob.y || this.y >= ob.y + ob.image.height || this.x + 8 <= ob.x || this.x >= ob.x + ob.image.width);
@@ -27,8 +31,7 @@ var Ball = function () {
         return this.fire && x > this.x && x < (this.x + 8) && y > this.y && y < (this.y + 8);
     };
     // 反弹
-    this.bounce = function (direction) {
-        log('bounce');
+    this.bounce = function () {
         this.speedY *= -1;
     };
     this.stay = function (ob) {
